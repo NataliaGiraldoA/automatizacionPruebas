@@ -81,38 +81,5 @@ public class CartPage extends BasePage {
         }
     }
 
-    public List<String> getProductosEnCarrito() {
-        List<String> productos = new ArrayList<>();
-        try {
-            List<WebElement> links = driver.findElements(allProductLinks());
-            for (WebElement link : links) {
-                String nombre = link.getText().trim();
-                if (!nombre.isEmpty()) {
-                    productos.add(nombre);
-                }
-            }
-        } catch (Exception e) {
-            // ignorar
-        }
-        return productos;
-    }
 
-    public void imprimirCarrito() {
-        System.out.println("\n=== Contenido del Carrito ===");
-
-        if (isCarritoVacio()) {
-            System.out.println("El carrito está vacío");
-            return;
-        }
-
-        List<String> productos = getProductosEnCarrito();
-        System.out.println("Total de productos: " + productos.size());
-
-        for (int i = 0; i < productos.size(); i++) {
-            String nombre = productos.get(i);
-            int cantidad = getCantidadProducto(nombre);
-            System.out.println((i + 1) + ". " + nombre + " - Cantidad: " + cantidad);
-        }
-        System.out.println("==============================\n");
-    }
 }
