@@ -42,6 +42,14 @@ public class HomePage extends BasePage {
         return By.xpath("//div[@id='search']//button");
     }
 
+    private By btnLogout() {
+        return By.xpath("//a[contains(@href,'route=account/logout')]");
+    }
+
+    private By accountDropdown() {
+        return By.xpath("//a[contains(text(),'My Account')]");
+    }
+
     // ==============================
     // Métodos / Acciones
     // ==============================
@@ -59,6 +67,21 @@ public class HomePage extends BasePage {
     public void clickLogin() {
         wait.until(ExpectedConditions.elementToBeClickable(btnLogin()));
         driver.findElement(btnLogin()).click();
+    }
+
+    public void clickLogout() {
+        wait.until(ExpectedConditions.elementToBeClickable(btnAccount()));
+        driver.findElement(btnAccount()).click();
+        wait.until(ExpectedConditions.elementToBeClickable(btnLogout()));
+        driver.findElement(btnLogout()).click();
+    }
+
+    public boolean isUserLoggedIn() {
+        try {
+            return driver.findElements(btnLogout()).size() > 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void selectCategory(String category) {

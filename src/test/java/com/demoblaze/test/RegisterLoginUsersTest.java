@@ -8,9 +8,10 @@ import com.demoblaze.utils.ExcelReaderLogin;
 import com.demoblaze.utils.ExcelReaderUsers;
 import com.demoblaze.utils.WebDriverWaits;
 import org.openqa.selenium.By;
-import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 public class RegisterLoginUsersTest extends BaseTest{
 
@@ -24,9 +25,24 @@ public class RegisterLoginUsersTest extends BaseTest{
         return ExcelReaderLogin.readLoginData(Constants.LOGIN_DATA);
     }
 
+    @AfterMethod
+    public void logout() {
+        try {
+            HomePage homePage = new HomePage(driver);
+            if (homePage.isUserLoggedIn()) {
+                homePage.clickLogout();
+                System.out.println("Logout exitoso");
+            }
+        } catch (Exception e) {
+            System.out.println("ya estaba logout");
+        }
+    }
+
     @Test(dataProvider = "usersFromExcel", priority = 1)
     public void RegistroUsuarios(String first, String last, String email,
                                  String phone, String pass, String confirm) {
+        SoftAssert softAssert = new SoftAssert();
+
         HomePage homePage = new HomePage(driver);
         homePage.navigateTo(Constants.BASE_URL);
 
@@ -35,32 +51,23 @@ public class RegisterLoginUsersTest extends BaseTest{
 
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.fillRegistrationForm(first, last, email, phone, pass, confirm);
-        registerPage.clickNewsletterYes();
+        registerPage.clickNewsletterNo();
         registerPage.clickPrivacyPolicy();
         registerPage.clickContinue();
 
-        boolean registroExitoso = registerPage.isRegistrationSuccess();
-        String mensajeExito = registerPage.getSuccessMessage();
-        String mensajeError = registerPage.getErrorMessage();
-
-        if (registroExitoso) {
-            Assert.assertTrue(
-                    mensajeExito.contains("Congratulations") ||
-                            mensajeExito.contains("Success") ||
-                            mensajeExito.contains("created"),
-                    "Registro exitoso pero mensaje no esperado. Mensaje: " + mensajeExito
-            );
-        } else if (!mensajeError.isEmpty()) {
-            System.out.println("Registro falló como se esperaba para: " + email + ". Error: " + mensajeError);
-        } else {
-            Assert.fail("No se pudo determinar el resultado del registro para: " + email);
+        boolean registroExitoso = registerPage.isRegistrationSuccessful();
+        if (!registroExitoso) {
+            boolean mensajeError = registerPage.ErrorMessage();
+            softAssert.assertFalse(mensajeError, "El test falló, no se hizo registro de usuario");
         }
+        softAssert.assertTrue(registroExitoso,"Se realizó el registro del usuario");
+        softAssert.assertAll();
+
     }
-
-
 
     @Test(dataProvider = "loginFromExcel", priority = 2)
     public void LoginUsuarios(String email, String password, String expectedResult) {
+        SoftAssert softAssert = new SoftAssert();
 
         HomePage homePage = new HomePage(driver);
         WebDriverWaits waits = new WebDriverWaits(driver);
@@ -71,7 +78,6 @@ public class RegisterLoginUsersTest extends BaseTest{
 
         LoginPage loginPage = new LoginPage(driver);
 
-        // Campos
         waits.waitForVisibility(By.id("input-email"));
         loginPage.enterEmail(email);
 
@@ -81,43 +87,37 @@ public class RegisterLoginUsersTest extends BaseTest{
         waits.waitForClickable(By.cssSelector("input[value='Login']"));
         loginPage.clickLogin();
 
-        // Estado después del intento
+        boolean errorVisible = loginPage.isErrorDisplayed();
         boolean success = loginPage.isLoginSuccessful();
-        boolean error = loginPage.isErrorDisplayed();
         String errorText = loginPage.getErrorText();
-        String currentUrl = driver.getCurrentUrl();
 
-        // =============================
-        // VALIDACIÓN FINAL
-        // =============================
+        String url = driver.getCurrentUrl();
 
         if (expectedResult.equalsIgnoreCase("SUCCESS")) {
-
-            Assert.assertTrue(
+            softAssert.assertTrue(
                     success,
-                    "FALLO: Se esperaba un login éxitoso, pero no se encontró el botón Logout. " +
-                            "Email=" + email + " | URL=" + currentUrl + " | Error='" + errorText + "'"
+                    "ERROR: Se esperaba login exitoso pero no se redirigió a la página 'My Account'. " +
+                            "URL actual: " + url + " | Mensaje de error: " + errorText
             );
-
-        } else { // FAIL esperado
-
-            Assert.assertFalse(
+            System.out.println("✓ Login exitoso para: " + email);
+        } else {
+            softAssert.assertFalse(
                     success,
-                    "FALLO CRÍTICO: Se esperaba fallo pero el sistema permitió el login. " +
-                            "Email=" + email + " | URL=" + currentUrl
+                    "FALLO: El login debía fallar pero redirigió a 'My Account'. URL: " + url
             );
 
-            Assert.assertTrue(
-                    error,
-                    "ERROR: El login falló como se esperaba, pero NO se mostró mensaje de advertencia. "
-                            + "Email=" + email + " | URL=" + currentUrl
+            softAssert.assertTrue(
+                    errorVisible,
+                    "ERROR: Se esperaba un mensaje de error pero no apareció. Email: " + email
             );
 
-            Assert.assertTrue(
+            softAssert.assertTrue(
                     errorText.contains("Warning"),
-                    "ERROR: El mensaje de error no contiene 'Warning'. Texto recibido: " + errorText
+                    "ERROR: El mensaje de error NO contiene 'Warning'. Mensaje recibido: " + errorText
             );
+            System.out.println("✓ Login falló como se esperaba para: " + email);
         }
-    }
 
+        softAssert.assertAll();
+    }
 }

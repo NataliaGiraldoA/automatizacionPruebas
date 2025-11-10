@@ -9,24 +9,36 @@ import java.io.InputStream;
 public class ExcelReaderCart {
 
     public static Object[][] readProductos(String path) {
-        String excelPath = (path == null || path.isBlank()) ? Constants.PRODUCTOS_BUSQUEDA : path;
+        // Validar path (compatible con Java 8)
+        String excelPath = (path == null || path.trim().isEmpty()) ? Constants.PRODUCTOS_BUSQUEDA : path;
 
         try (InputStream is = new FileInputStream(excelPath);
              Workbook wb = new XSSFWorkbook(is)) {
+
+            // Validar que el workbook tenga hojas
+            if (wb.getNumberOfSheets() == 0) {
+                return new Object[0][4];
+            }
 
             Sheet sheet = wb.getSheetAt(0);
             DataFormatter fmt = new DataFormatter();
 
             int firstRowIdx = sheet.getFirstRowNum();
             int lastRowIdx = sheet.getLastRowNum();
-            int totalRows = lastRowIdx - firstRowIdx;
+
+            // Si no hay filas o solo hay header, retornar vacío
+            if (lastRowIdx <= firstRowIdx) {
+                return new Object[0][4];
+            }
 
             // 4 columnas: Categoria, SubCategoria, Producto, Cantidad
             int COLS = 4;
+            int totalRows = lastRowIdx - firstRowIdx;
             Object[][] data = new Object[totalRows][COLS];
 
             // Saltar header (firstRowIdx + 1)
-            for (int i = firstRowIdx + 1, out = 0; i <= lastRowIdx; i++) {
+            int out = 0;
+            for (int i = firstRowIdx + 1; i <= lastRowIdx; i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
@@ -35,11 +47,20 @@ public class ExcelReaderCart {
                 String producto = fmt.formatCellValue(row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
                 String cantidadStr = fmt.formatCellValue(row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
 
+                // Saltar filas donde el producto esté vacío
+                if (producto.isEmpty()) continue;
+
                 int cantidad = 1;
                 try {
                     cantidad = Integer.parseInt(cantidadStr);
                 } catch (NumberFormatException e) {
-                    // mantener cantidad = 1
+                    try {
+                        // Intentar parsear como double por si viene con decimales (ej: 1.0)
+                        double d = Double.parseDouble(cantidadStr);
+                        cantidad = (int) d;
+                    } catch (NumberFormatException e2) {
+                        // mantener cantidad = 1
+                    }
                 }
 
                 data[out][0] = categoria;
@@ -49,19 +70,10 @@ public class ExcelReaderCart {
                 out++;
             }
 
-            // Recortar filas vacías
-            int filled = 0;
-            for (int i = 0; i < data.length; i++) {
-                if (data[i][2] != null && !data[i][2].toString().isEmpty()) filled++;
-            }
-
-            if (filled != data.length) {
-                Object[][] trimmed = new Object[filled][COLS];
-                for (int i = 0, j = 0; i < data.length; i++) {
-                    if (data[i][2] != null && !data[i][2].toString().isEmpty()) {
-                        System.arraycopy(data[i], 0, trimmed[j++], 0, COLS);
-                    }
-                }
+            // Recortar al tamaño real (solo filas válidas)
+            if (out < data.length) {
+                Object[][] trimmed = new Object[out][COLS];
+                System.arraycopy(data, 0, trimmed, 0, out);
                 return trimmed;
             }
 

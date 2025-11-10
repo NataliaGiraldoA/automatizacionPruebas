@@ -2,6 +2,7 @@ package com.demoblaze.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class LoginPage extends BasePage {
 
@@ -9,19 +10,11 @@ public class LoginPage extends BasePage {
         super(driver);
     }
 
-    // Selectores
     private By emailInput() { return By.id("input-email"); }
     private By passwordInput() { return By.id("input-password"); }
     private By loginButton() { return By.cssSelector("input[value='Login']"); }
-
-
-    private By logoutButton() { return By.xpath("//a[contains(@href, 'account/logout')]"); }
-
-    // Mensaje de error
     private By alertMessage() { return By.cssSelector(".alert-danger"); }
 
-
-    // Acciones
     public void enterEmail(String email) {
         driver.findElement(emailInput()).clear();
         driver.findElement(emailInput()).sendKeys(email);
@@ -36,13 +29,16 @@ public class LoginPage extends BasePage {
         driver.findElement(loginButton()).click();
     }
 
+
     public boolean isLoginSuccessful() {
         try {
-            return driver.findElement(logoutButton()).isDisplayed();
+            WebElement accountHeader = driver.findElement(By.xpath("//h2[text()='My Account']"));
+            return accountHeader.isDisplayed();
         } catch (Exception e) {
             return false;
         }
     }
+
 
     public boolean isErrorDisplayed() {
         try {

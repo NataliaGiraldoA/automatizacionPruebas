@@ -1,21 +1,22 @@
 package com.demoblaze.pages;
 
+import com.demoblaze.utils.WebDriverWaits;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CartPage extends BasePage {
 
+    private WebDriverWaits waits;
+
     public CartPage(WebDriver driver) {
         super(driver);
+        this.waits = new WebDriverWaits(driver);
     }
 
-    // Elementos - Selectores más generales
+    // Elementos
     private By cartLink() {
         return By.xpath("//a[contains(@href, 'checkout/cart')]");
     }
@@ -25,22 +26,22 @@ public class CartPage extends BasePage {
     }
 
     private By allTableRows() {
-        return By.xpath("//table//tbody//tr");
+        return By.xpath("//tbody//tr");
     }
 
     private By allProductLinks() {
-        return By.xpath("//table//tbody//tr//td//a[not(contains(@class,'btn'))]");
+        return By.xpath("//tbody//a[contains(@href, 'product') and not(contains(@class, 'btn'))]");
     }
 
     private By quantityInputs() {
-        return By.name("quantity");
+        return By.xpath("//tbody/tr/td[4]/div/input");
     }
 
     // Métodos
     public void irAlCarrito() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.elementToBeClickable(cartLink())).click();
-        wait.until(ExpectedConditions.urlContains("checkout/cart"));
+        waits.waitForClickable(cartLink());
+        driver.findElement(cartLink()).click();
+        waits.waitForUrlContains("checkout/cart");
     }
 
     public boolean isCarritoVacio() {
@@ -48,17 +49,6 @@ public class CartPage extends BasePage {
             return driver.findElement(emptyMessage()).isDisplayed();
         } catch (Exception e) {
             return false;
-        }
-    }
-
-    public int getTotalProductos() {
-        try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-            wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(quantityInputs()));
-            List<WebElement> inputs = driver.findElements(quantityInputs());
-            return inputs.size();
-        } catch (Exception e) {
-            return 0;
         }
     }
 

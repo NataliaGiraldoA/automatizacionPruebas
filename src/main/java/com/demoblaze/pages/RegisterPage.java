@@ -95,35 +95,21 @@ public class RegisterPage extends BasePage{
         wait.until(ExpectedConditions.elementToBeClickable(continueBtn));
         driver.findElement(continueBtn).click();
     }
-
-    public boolean isRegistrationSuccess() {
+    public boolean isRegistrationSuccessful() {
         try {
-            By successMessage = By.cssSelector(".alert.alert-success");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage));
-            return driver.findElement(successMessage).isDisplayed();
+            WebElement congratulationsMessage = driver.findElement(By.xpath("//*[@id='content']//p[contains(text(),'Congratulations')]"));
+            return congratulationsMessage.isDisplayed();
         } catch (Exception e) {
             return false;
         }
     }
 
-    public String getSuccessMessage() {
-        try {
-            By successMessage = By.cssSelector(".alert.alert-success");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage));
-            return driver.findElement(successMessage).getText();
-        } catch (Exception e) {
-            return "";
-        }
-    }
 
-    public String getErrorMessage() {
-        try {
+    public boolean ErrorMessage() {
             By errorMessage = By.cssSelector(".alert.alert-danger");
             wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
-            return driver.findElement(errorMessage).getText();
-        } catch (Exception e) {
-            return "";
-        }
+            return true;
+
     }
 
 }

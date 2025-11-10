@@ -7,129 +7,64 @@ import com.demoblaze.pages.CartPage;
 import com.demoblaze.utils.Constants;
 import com.demoblaze.utils.ExcelReaderCart;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BuscarYAgregarCarritoTest extends BaseTest {
 
-    @Test
-    public void testBuscarYAgregarProductosDesdeExcel() {
-        // Leer productos del Excel
-        Object[][] productos = ExcelReaderCart.readProductos(null);
+    @DataProvider(name = "productosFromExcel")
+    public Object[][] productosFromExcel() {
+        return ExcelReaderCart.readProductos(null);
+    }
 
+    @Test(dataProvider = "productosFromExcel")
+    public void testBuscarYAgregarProductoAlCarrito(String categoria, String subCategoria,
+                                                     String nombreProducto, int cantidad) {
         HomePage homePage = new HomePage(driver);
         ProductsPage productsPage = new ProductsPage(driver);
         ProductsDetallePage detallePage = new ProductsDetallePage(driver);
         CartPage cartPage = new CartPage(driver);
 
-        // Map para productos esperados
-        Map<String, Integer> productosEsperados = new HashMap<>();
+        System.out.println("\n=== Prueba de búsqueda y agregado al carrito ===");
+        System.out.println("Categoría: " + categoria);
+        System.out.println("SubCategoría: " + subCategoria);
+        System.out.println("Producto: " + nombreProducto);
+        System.out.println("Cantidad: " + cantidad);
 
-        System.out.println("=== Iniciando prueba de búsqueda y agregado al carrito ===");
-        System.out.println("Total de productos a procesar: " + productos.length);
+        // Navegar a la página principal
+        homePage.navigateTo(Constants.BASE_URL);
 
-        // Agregar productos al carrito
-        for (int i = 0; i < productos.length; i++) {
-            String categoria = (String) productos[i][0];
-            String subCategoria = (String) productos[i][1];
-            String nombreProducto = (String) productos[i][2];
-            int cantidad = (int) productos[i][3];
+        // Buscar el producto
+        homePage.buscarProducto(nombreProducto);
 
-            System.out.println("\n--- Producto " + (i+1) + " de " + productos.length + " ---");
-            System.out.println("Categoría: " + categoria);
-            System.out.println("SubCategoría: " + subCategoria);
-            System.out.println("Producto: " + nombreProducto);
-            System.out.println("Cantidad: " + cantidad);
+        // Verificar que el producto aparece en los resultados
+        Assert.assertTrue(productsPage.isProductDisplayed(nombreProducto),
+                "El producto '" + nombreProducto + "' no aparece en los resultados de búsqueda");
+        System.out.println("✓ Producto encontrado en resultados");
 
-            try {
-                homePage.navigateTo(Constants.BASE_URL);
-                homePage.buscarProducto(nombreProducto);
+        // Seleccionar el producto
+        productsPage.selectProduct(nombreProducto);
+        System.out.println("✓ Producto seleccionado");
 
-                // Esperar brevemente para que se carguen los resultados
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+        // Agregar al carrito
+        detallePage.agregarCarrito(cantidad);
+        System.out.println("✓ Agregado al carrito (cantidad: " + cantidad + ")");
 
-                boolean productVisible = productsPage.isProductDisplayed(nombreProducto);
-
-                // Esperar brevemente para que el producto se agregue al carrito
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-
-                Assert.assertTrue(productVisible,
-                        "El producto '" + nombreProducto + "' no aparece en los resultados");
-                System.out.println("✓ Producto encontrado");
-
-                productsPage.selectProduct(nombreProducto);
-                System.out.println("✓ Producto seleccionado");
-
-                detallePage.agregarCarrito(cantidad);
-
-        // Esperar brevemente para que se cargue el carrito
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-                System.out.println("✓ Agregado al carrito");
-
-        boolean carritoVacio = cartPage.isCarritoVacio();
-        Assert.assertFalse(carritoVacio, "El carrito está vacío");
-
-            } catch (Exception e) {
-                System.err.println("✗ Error: " + e.getMessage());
-                Assert.fail("Error procesando: " + nombreProducto);
-            }
-        }
-
-        // Validar carrito
-        System.out.println("\n" + "=".repeat(60));
-        System.out.println("🛒 VALIDANDO CARRITO");
-        System.out.println("=".repeat(60));
-
+        // Ir al carrito
         cartPage.irAlCarrito();
-        System.out.println("✓ En el carrito");
+        System.out.println("✓ Navegado al carrito");
 
-        Assert.assertFalse(cartPage.isCarritoVacio(), "El carrito está vacío");
-        System.out.println("✓ Carrito contiene productos");
+        // Validar que el producto está en el carrito
+        Assert.assertTrue(cartPage.isProductoEnCarrito(nombreProducto),
+                "El producto '" + nombreProducto + "' no está en el carrito");
+        System.out.println("✓ Producto encontrado en carrito");
 
-        cartPage.imprimirCarrito();
+        // Validar la cantidad
+        int cantidadReal = cartPage.getCantidadProducto(nombreProducto);
+        Assert.assertEquals(cantidadReal, cantidad,
+                "La cantidad del producto '" + nombreProducto + "' no es la esperada");
+        System.out.println("✓ Cantidad correcta: " + cantidadReal);
 
-        int esperados = productosEsperados.size();
-        int enCarrito = cartPage.getTotalProductos();
-
-        Assert.assertEquals(enCarrito, esperados,
-                "Productos en carrito no coinciden. Esperados: " + esperados + ", En carrito: " + enCarrito);
-        System.out.println("✓ Número de productos correcto: " + enCarrito);
-
-        // Validar cada producto
-        System.out.println("\n--- Validando productos ---");
-        for (Map.Entry<String, Integer> entry : productosEsperados.entrySet()) {
-            String nombre = entry.getKey();
-            int cantidadEsperada = entry.getValue();
-
-            System.out.println("\nValidando: " + nombre);
-
-            Assert.assertTrue(cartPage.isProductoEnCarrito(nombre),
-                    "Producto '" + nombre + "' no está en el carrito");
-            System.out.println("✓ Encontrado");
-
-            int cantidadReal = cartPage.getCantidadProducto(nombre);
-            Assert.assertEquals(cantidadReal, cantidadEsperada,
-                    "Cantidad incorrecta para '" + nombre + "'");
-            System.out.println("✓ Cantidad correcta: " + cantidadReal);
-        }
-
-        System.out.println("\n" + "=".repeat(60));
-        System.out.println("✅ VALIDACIÓN EXITOSA");
-        System.out.println("=".repeat(60));
+        System.out.println("✅ Validación exitosa para: " + nombreProducto);
     }
-
 }
