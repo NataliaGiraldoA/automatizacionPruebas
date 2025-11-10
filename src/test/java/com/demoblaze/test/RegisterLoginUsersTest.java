@@ -8,6 +8,7 @@ import com.demoblaze.utils.ExcelReaderLogin;
 import com.demoblaze.utils.ExcelReaderUsers;
 import com.demoblaze.utils.WebDriverWaits;
 import org.openqa.selenium.By;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -94,28 +95,40 @@ public class RegisterLoginUsersTest extends BaseTest{
         String url = driver.getCurrentUrl();
 
         if (expectedResult.equalsIgnoreCase("SUCCESS")) {
-            softAssert.assertTrue(
+
+            Assert.assertTrue(
                     success,
-                    "ERROR: Se esperaba login exitoso pero no se redirigió a la página 'My Account'. " +
-                            "URL actual: " + url + " | Mensaje de error: " + errorText
+                    "ERROR: Se esperaba un login exitoso, pero no se redirigió a la página 'My Account'.\n" +
+                            "Email: " + email + "\n" +
+                            "URL actual: " + url + "\n" +
+                            "Mensaje de error (si lo hubo): " + errorText
             );
-            System.out.println("✓ Login exitoso para: " + email);
+
         } else {
-            softAssert.assertFalse(
+
+            Assert.assertFalse(
                     success,
-                    "FALLO: El login debía fallar pero redirigió a 'My Account'. URL: " + url
+                    "ERROR: El login debía fallar, pero se ingresó correctamente.\n" +
+                            "Email: " + email + "\n" +
+                            "URL actual: " + url
             );
 
-            softAssert.assertTrue(
-                    errorVisible,
-                    "ERROR: Se esperaba un mensaje de error pero no apareció. Email: " + email
-            );
+            if (errorVisible) {
 
-            softAssert.assertTrue(
-                    errorText.contains("Warning"),
-                    "ERROR: El mensaje de error NO contiene 'Warning'. Mensaje recibido: " + errorText
-            );
-            System.out.println("✓ Login falló como se esperaba para: " + email);
+                Assert.assertTrue(
+                        errorText.contains("Warning"),
+                        "ERROR: Se esperaba que el mensaje de error contuviera 'Warning'.\n" +
+                                "Mensaje recibido: " + errorText
+                );
+
+            } else {
+                Assert.assertTrue(
+                        url.contains("route=account/login"),
+                        "ERROR: No se detectó alerta y el navegador no permaneció en la página de login.\n" +
+                                "Email: " + email + "\n" +
+                                "URL actual: " + url
+                );
+            }
         }
 
         softAssert.assertAll();

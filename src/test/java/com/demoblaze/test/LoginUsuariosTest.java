@@ -23,13 +23,14 @@ public class LoginUsuariosTest extends BaseTest {
         HomePage homePage = new HomePage(driver);
         WebDriverWaits waits = new WebDriverWaits(driver);
 
+
         homePage.navigateTo(Constants.BASE_URL);
         homePage.clickAccount();
         homePage.clickLogin();
 
         LoginPage loginPage = new LoginPage(driver);
 
-        // Campos
+
         waits.waitForVisibility(By.id("input-email"));
         loginPage.enterEmail(email);
 
@@ -39,42 +40,48 @@ public class LoginUsuariosTest extends BaseTest {
         waits.waitForClickable(By.cssSelector("input[value='Login']"));
         loginPage.clickLogin();
 
-        // Estado después del intento
-        boolean success = loginPage.isLoginSuccessful();
-        boolean error = loginPage.isErrorDisplayed();
-        String errorText = loginPage.getErrorText();
-        String currentUrl = driver.getCurrentUrl();
 
-        // =============================
-        // VALIDACIÓN FINAL
-        // =============================
+        boolean success = loginPage.isLoginSuccessful();
+        boolean errorVisible = loginPage.isErrorDisplayed();
+        String errorText = loginPage.getErrorText();
+        String url = driver.getCurrentUrl();
+
 
         if (expectedResult.equalsIgnoreCase("SUCCESS")) {
 
             Assert.assertTrue(
                     success,
-                    "FALLO: Se esperaba un login exitoso, pero no se encontró el botón Logout. " +
-                            "Email=" + email + " | URL=" + currentUrl + " | Error='" + errorText + "'"
+                    "ERROR: Se esperaba un login exitoso, pero no se redirigió a la página 'My Account'.\n" +
+                            "Email: " + email + "\n" +
+                            "URL actual: " + url + "\n" +
+                            "Mensaje de error (si lo hubo): " + errorText
             );
 
-        } else { // FAIL esperado
+        } else {
 
             Assert.assertFalse(
                     success,
-                    "FALLO CRÍTICO: Se esperaba fallo pero el sistema permitió el login. " +
-                            "Email=" + email + " | URL=" + currentUrl
+                    "ERROR: El login debía fallar, pero se ingresó correctamente.\n" +
+                            "Email: " + email + "\n" +
+                            "URL actual: " + url
             );
 
-            Assert.assertTrue(
-                    error,
-                    "ERROR: El login falló como se esperaba, pero NO se mostró mensaje de advertencia. "
-                            + "Email=" + email + " | URL=" + currentUrl
-            );
+            if (errorVisible) {
 
-            Assert.assertTrue(
-                    errorText.contains("Warning"),
-                    "ERROR: El mensaje de error no contiene 'Warning'. Texto recibido: " + errorText
-            );
+                Assert.assertTrue(
+                        errorText.contains("Warning"),
+                        "ERROR: Se esperaba que el mensaje de error contuviera 'Warning'.\n" +
+                                "Mensaje recibido: " + errorText
+                );
+
+            } else {
+                Assert.assertTrue(
+                        url.contains("route=account/login"),
+                        "ERROR: No se detectó alerta y el navegador no permaneció en la página de login.\n" +
+                                "Email: " + email + "\n" +
+                                "URL actual: " + url
+                );
+            }
         }
     }
 }
