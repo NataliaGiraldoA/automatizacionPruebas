@@ -12,6 +12,8 @@ import org.testng.annotations.Test;
 
 public class BuscarYAgregarCarritoTest extends BaseTest {
 
+    private static final int CANTIDAD_MAXIMA = 99;
+
     @DataProvider(name = "productosFromExcel")
     public Object[][] productosFromExcel() {
         return ExcelReaderCart.readProductos(null);
@@ -19,7 +21,7 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
 
     @Test(dataProvider = "productosFromExcel")
     public void testBuscarYAgregarProductoAlCarrito(String categoria, String subCategoria,
-                                                     String nombreProducto, int cantidad) {
+                                                    String nombreProducto, int cantidad) {
         HomePage homePage = new HomePage(driver);
         ProductsPage productsPage = new ProductsPage(driver);
         ProductsDetallePage detallePage = new ProductsDetallePage(driver);
@@ -31,6 +33,28 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
         System.out.println("Producto: " + nombreProducto);
         System.out.println("Cantidad: " + cantidad);
 
+        // === VALIDACIONES DE CANTIDAD ===
+
+        // Assert: La cantidad NO debe ser cero
+        Assert.assertTrue(cantidad != 0,
+                "La cantidad no puede ser 0. Cantidad recibida: " + cantidad);
+
+        // Assert: La cantidad NO debe ser negativa
+        Assert.assertTrue(cantidad > 0,
+                "La cantidad debe ser mayor a 0 (no se permiten valores negativos). Cantidad recibida: " + cantidad);
+
+        // Assert: La cantidad NO debe exceder el máximo
+        Assert.assertTrue(cantidad <= CANTIDAD_MAXIMA,
+                "La cantidad no debe exceder " + CANTIDAD_MAXIMA + ". Cantidad recibida: " + cantidad);
+
+        // Assert: La cantidad debe estar en el rango válido (1 a CANTIDAD_MAXIMA)
+        Assert.assertTrue(cantidad > 0 && cantidad <= CANTIDAD_MAXIMA,
+                "La cantidad debe estar en el rango válido (1-" + CANTIDAD_MAXIMA + "). Cantidad recibida: " + cantidad);
+
+        System.out.println("Validaciones de cantidad superadas");
+
+        // === FLUJO PRINCIPAL ===
+
         // Navegar a la página principal
         homePage.navigateTo(Constants.BASE_URL);
 
@@ -40,31 +64,47 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
         // Verificar que el producto aparece en los resultados
         Assert.assertTrue(productsPage.isProductDisplayed(nombreProducto),
                 "El producto '" + nombreProducto + "' no aparece en los resultados de búsqueda");
-        System.out.println("✓ Producto encontrado en resultados");
+        System.out.println("Producto encontrado en resultados");
 
         // Seleccionar el producto
         productsPage.selectProduct(nombreProducto);
-        System.out.println("✓ Producto seleccionado");
+        System.out.println("Producto seleccionado");
 
         // Agregar al carrito
         detallePage.agregarCarrito(cantidad);
-        System.out.println("✓ Agregado al carrito (cantidad: " + cantidad + ")");
+        System.out.println("Agregado al carrito (cantidad: " + cantidad + ")");
 
         // Ir al carrito
         cartPage.irAlCarrito();
-        System.out.println("✓ Navegado al carrito");
+        System.out.println("Navegado al carrito");
 
-        // Validar que el producto está en el carrito
+        // === VALIDACIONES EN EL CARRITO ===
+
+        // Assert: El producto debe estar en el carrito
         Assert.assertTrue(cartPage.isProductoEnCarrito(nombreProducto),
                 "El producto '" + nombreProducto + "' no está en el carrito");
-        System.out.println("✓ Producto encontrado en carrito");
+        System.out.println("Producto encontrado en carrito");
 
-        // Validar la cantidad
+        // Obtener cantidad del carrito
         int cantidadReal = cartPage.getCantidadProducto(nombreProducto);
-        Assert.assertEquals(cantidadReal, cantidad,
-                "La cantidad del producto '" + nombreProducto + "' no es la esperada");
-        System.out.println("✓ Cantidad correcta: " + cantidadReal);
 
-        System.out.println("✅ Validación exitosa para: " + nombreProducto);
+        // Assert: La cantidad en el carrito NO debe ser cero
+        Assert.assertTrue(cantidadReal != 0,
+                "La cantidad del producto en el carrito no puede ser 0. Cantidad actual: " + cantidadReal);
+
+        // Assert: La cantidad en el carrito debe ser mayor a cero
+        Assert.assertTrue(cantidadReal > 0,
+                "La cantidad del producto en el carrito debe ser mayor a 0. Cantidad actual: " + cantidadReal);
+
+        // Assert: La cantidad en el carrito NO debe exceder el máximo
+        Assert.assertTrue(cantidadReal <= CANTIDAD_MAXIMA,
+                "La cantidad del producto en el carrito excede el máximo permitido (" + CANTIDAD_MAXIMA + "). Cantidad actual: " + cantidadReal);
+
+        // Assert: La cantidad en el carrito debe coincidir con la cantidad agregada
+        Assert.assertEquals(cantidadReal, cantidad,
+                "La cantidad del producto '" + nombreProducto + "' no es la esperada. Esperada: " + cantidad + ", Actual: " + cantidadReal);
+
+        System.out.println("Cantidad correcta: " + cantidadReal);
+        System.out.println("Validación exitosa para: " + nombreProducto);
     }
 }

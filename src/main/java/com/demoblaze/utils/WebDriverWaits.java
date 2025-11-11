@@ -29,7 +29,8 @@ public class WebDriverWaits {
         wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
-    public void waitForUrlContains(String fragment){
+
+public void waitForUrlContains(String fragment){
         wait.until(ExpectedConditions.urlContains(fragment));
     }
 }
