@@ -25,7 +25,6 @@ public class WebDriverWaits {
         wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
 
-    // Esperar la presencia en DOM
     public void waitForPresence(By locator) {
         wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }

@@ -8,6 +8,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 public class RegistroUsuariosTest extends BaseTest{
     @DataProvider(name = "usersFromExcel")
@@ -22,16 +23,18 @@ public class RegistroUsuariosTest extends BaseTest{
             // Si el usuario está logueado, hacer logout
             if (homePage.isUserLoggedIn()) {
                 homePage.clickLogout();
-                System.out.println("✓ Logout exitoso");
+                System.out.println("Logout hecho");
             }
         } catch (Exception e) {
-            System.out.println("No fue necesario hacer logout o ya estaba deslogueado");
+            System.out.println("No se encontraba autenticado");
         }
     }
 
     @Test(dataProvider = "usersFromExcel")
     public void RegistroUsuarios(String first, String last, String email,
-                                 String phone, String pass, String confirm){
+                                 String phone, String pass, String confirm) {
+        SoftAssert softAssert = new SoftAssert();
+
         HomePage homePage = new HomePage(driver);
         homePage.navigateTo(Constants.BASE_URL);
 
@@ -40,15 +43,19 @@ public class RegistroUsuariosTest extends BaseTest{
 
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.fillRegistrationForm(first, last, email, phone, pass, confirm);
-        registerPage.clickNewsletterYes();
+        registerPage.clickNewsletterNo();
         registerPage.clickPrivacyPolicy();
         registerPage.clickContinue();
 
-        Assert.assertTrue(registerPage.isRegistrationSuccessful(),
-            "El registro fallo para el usuario: " + email);
+        String mensajeErrorText = registerPage.getErrorMessage();
 
-        /*String successMessage = registerPage.getSuccessMessage();
-        Assert.assertTrue(successMessage.contains("Congratulations") || successMessage.contains("Success"),
-            "No aparecio el mensaje de exito esperado");*/
+        boolean registroExitoso = registerPage.isRegistrationSuccessful();
+        if (!registroExitoso) {
+            boolean mensajeError = registerPage.ErrorMessage();
+            softAssert.assertFalse(mensajeError, "El test falló, no se hizo registro de usuario - Mensaje de error: " + mensajeErrorText);
+        }
+        softAssert.assertTrue(registroExitoso,"Se realizó el registro del usuario");
+        softAssert.assertAll();
+
     }
 }

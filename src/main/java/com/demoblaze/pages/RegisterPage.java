@@ -103,13 +103,16 @@ public class RegisterPage extends BasePage{
             return false;
         }
     }
-
-
     public boolean ErrorMessage() {
             By errorMessage = By.cssSelector(".alert.alert-danger");
             wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
             return true;
 
+    }
+    public String getErrorMessage() {
+        By errorMessage = By.cssSelector(".alert.alert-danger");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+        return driver.findElement(errorMessage).getText();
     }
 
 }

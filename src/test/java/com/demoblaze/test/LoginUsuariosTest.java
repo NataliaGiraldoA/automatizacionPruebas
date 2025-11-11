@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 public class LoginUsuariosTest extends BaseTest {
 
@@ -19,6 +20,7 @@ public class LoginUsuariosTest extends BaseTest {
 
     @Test(dataProvider = "loginFromExcel")
     public void LoginUsuarios(String email, String password, String expectedResult) {
+        SoftAssert softAssert = new SoftAssert();
 
         HomePage homePage = new HomePage(driver);
         WebDriverWaits waits = new WebDriverWaits(driver);
@@ -29,7 +31,6 @@ public class LoginUsuariosTest extends BaseTest {
 
         LoginPage loginPage = new LoginPage(driver);
 
-        // Campos
         waits.waitForVisibility(By.id("input-email"));
         loginPage.enterEmail(email);
 
@@ -39,42 +40,36 @@ public class LoginUsuariosTest extends BaseTest {
         waits.waitForClickable(By.cssSelector("input[value='Login']"));
         loginPage.clickLogin();
 
-        // Estado después del intento
+        boolean errorVisible = loginPage.isErrorDisplayed();
         boolean success = loginPage.isLoginSuccessful();
-        boolean error = loginPage.isErrorDisplayed();
         String errorText = loginPage.getErrorText();
-        String currentUrl = driver.getCurrentUrl();
 
-        // =============================
-        // VALIDACIÓN FINAL
-        // =============================
+        String url = driver.getCurrentUrl();
 
         if (expectedResult.equalsIgnoreCase("SUCCESS")) {
-
-            Assert.assertTrue(
+            softAssert.assertTrue(
                     success,
-                    "FALLO: Se esperaba un login exitoso, pero no se encontró el botón Logout. " +
-                            "Email=" + email + " | URL=" + currentUrl + " | Error='" + errorText + "'"
+                    "ERROR: Se esperaba login exitoso pero no se redirigió a la página 'My Account'. " +
+                            "URL actual: " + url + " | Mensaje de error: " + errorText
             );
-
-        } else { // FAIL esperado
-
-            Assert.assertFalse(
+            System.out.println("✓ Login exitoso para: " + email);
+        } else {
+            softAssert.assertFalse(
                     success,
-                    "FALLO CRÍTICO: Se esperaba fallo pero el sistema permitió el login. " +
-                            "Email=" + email + " | URL=" + currentUrl
+                    "FALLO: El login debía fallar pero redirigió a 'My Account'. URL: " + url
             );
 
-            Assert.assertTrue(
-                    error,
-                    "ERROR: El login falló como se esperaba, pero NO se mostró mensaje de advertencia. "
-                            + "Email=" + email + " | URL=" + currentUrl
+            softAssert.assertTrue(
+                    errorVisible,
+                    "ERROR: Se esperaba un mensaje de error pero no apareció. Email: " + email
             );
 
-            Assert.assertTrue(
+            softAssert.assertTrue(
                     errorText.contains("Warning"),
-                    "ERROR: El mensaje de error no contiene 'Warning'. Texto recibido: " + errorText
+                    "ERROR: El mensaje de error NO contiene 'Warning'. Mensaje recibido: " + errorText
             );
         }
+
+        softAssert.assertAll();
     }
 }
