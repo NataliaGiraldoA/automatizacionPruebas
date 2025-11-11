@@ -2,6 +2,7 @@ package com.demoblaze.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class LoginPage extends BasePage {
 
@@ -28,9 +29,19 @@ public class LoginPage extends BasePage {
         driver.findElement(loginButton()).click();
     }
 
+    /*
     // ✅ Nueva verificación correcta: login exitoso = cambiar de página
     public boolean isLoginSuccessful() {
         return driver.getCurrentUrl().contains("route=account/account");
+    }
+*/
+    public boolean isLoginSuccessful(){
+        try{
+            WebElement accountMessage = driver.findElement(By.cssSelector("#content > h2:nth-child(1)"));
+            return accountMessage.isDisplayed();
+        } catch (Exception e){
+            return false;
+        }
     }
 
     public boolean isErrorDisplayed() {

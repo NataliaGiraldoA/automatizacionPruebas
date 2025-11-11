@@ -55,24 +55,24 @@ public class HomePage extends BasePage {
     // ==============================
 
     public void clickAccount() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnAccount()));
+        waits.until(ExpectedConditions.elementToBeClickable(btnAccount()));
         driver.findElement(btnAccount()).click();
     }
 
     public void clickRegister() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnRegister()));
+        waits.until(ExpectedConditions.elementToBeClickable(btnRegister()));
         driver.findElement(btnRegister()).click();
     }
 
     public void clickLogin() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnLogin()));
+        waits.until(ExpectedConditions.elementToBeClickable(btnLogin()));
         driver.findElement(btnLogin()).click();
     }
 
     public void clickLogout() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnAccount()));
+        waits.until(ExpectedConditions.elementToBeClickable(btnAccount()));
         driver.findElement(btnAccount()).click();
-        wait.until(ExpectedConditions.elementToBeClickable(btnLogout()));
+        waits.until(ExpectedConditions.elementToBeClickable(btnLogout()));
         driver.findElement(btnLogout()).click();
     }
 
@@ -85,12 +85,12 @@ public class HomePage extends BasePage {
     }
 
     public void selectCategory(String category) {
-        wait.until(ExpectedConditions.elementToBeClickable(category(category)));
+        waits.until(ExpectedConditions.elementToBeClickable(category(category)));
         driver.findElement(category(category)).click();
     }
 
     public void selectSubCategory(String subcategory) {
-        wait.until(ExpectedConditions.elementToBeClickable(subcategory(subcategory)));
+        waits.until(ExpectedConditions.elementToBeClickable(subcategory(subcategory)));
         driver.findElement(subcategory(subcategory)).click();
     }
 
@@ -99,11 +99,11 @@ public class HomePage extends BasePage {
     // ==============================
 
     public void buscarProducto(String nombreProducto) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(searchBox()));
-        wait.until(ExpectedConditions.elementToBeClickable(searchBox()));
+        waits.until(ExpectedConditions.visibilityOfElementLocated(searchBox()));
+        waits.until(ExpectedConditions.elementToBeClickable(searchBox()));
         driver.findElement(searchBox()).clear();
         driver.findElement(searchBox()).sendKeys(nombreProducto);
-        wait.until(ExpectedConditions.elementToBeClickable(searchButton()));
+        waits.until(ExpectedConditions.elementToBeClickable(searchButton()));
         driver.findElement(searchButton()).click();
     }
 

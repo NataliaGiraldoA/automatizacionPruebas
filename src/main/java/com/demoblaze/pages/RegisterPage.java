@@ -35,8 +35,8 @@ public class RegisterPage extends BasePage{
     private final By continueBtn   = By.cssSelector("input[type='submit'][value='Continue']");
 
     private void fillField(By locator, String value) {
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        wait.until(ExpectedConditions.elementToBeClickable(locator));
+        WebElement element = waits.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        waits.until(ExpectedConditions.elementToBeClickable(locator));
         if (element != null) {
             element.clear();
             element.sendKeys(value);
@@ -74,25 +74,25 @@ public class RegisterPage extends BasePage{
         enterEmail(email);
         enterPhone(phone);
         enterPassword(password);
-        wait.until(ExpectedConditions.elementToBeClickable(newsletterYes));
+        waits.until(ExpectedConditions.elementToBeClickable(newsletterYes));
         enterConfirmPassword(confirmPassword);
     }
     public void clickNewsletterYes(){
-        wait.until(ExpectedConditions.elementToBeClickable(newsletterYes));
+        waits.until(ExpectedConditions.elementToBeClickable(newsletterYes));
         driver.findElement(newsletterYes).click();
     }
 
     public void clickNewsletterNo(){
-        wait.until(ExpectedConditions.elementToBeClickable(newsletterNo));
+        waits.until(ExpectedConditions.elementToBeClickable(newsletterNo));
         driver.findElement(newsletterNo).click();
     }
 
     public void clickPrivacyPolicy(){
-        wait.until(ExpectedConditions.elementToBeClickable(privacyPolicy));
+        waits.until(ExpectedConditions.elementToBeClickable(privacyPolicy));
         driver.findElement(privacyPolicy).click();
     }
     public void clickContinue(){
-        wait.until(ExpectedConditions.elementToBeClickable(continueBtn));
+        waits.until(ExpectedConditions.elementToBeClickable(continueBtn));
         driver.findElement(continueBtn).click();
     }
     public boolean isRegistrationSuccessful() {
@@ -105,13 +105,13 @@ public class RegisterPage extends BasePage{
     }
     public boolean ErrorMessage() {
             By errorMessage = By.cssSelector(".alert.alert-danger");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+            waits.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
             return true;
 
     }
     public String getErrorMessage() {
         By errorMessage = By.cssSelector(".alert.alert-danger");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+        waits.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
         return driver.findElement(errorMessage).getText();
     }
 

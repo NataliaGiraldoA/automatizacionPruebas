@@ -18,8 +18,8 @@ public class ProductsPage extends BasePage{
 
     //Metodo
     public void selectProduct(String product){
-        wait.until(ExpectedConditions.visibilityOfElementLocated(product(product)));
-        wait.until(ExpectedConditions.elementToBeClickable(product(product)));
+        waits.until(ExpectedConditions.visibilityOfElementLocated(product(product)));
+        waits.until(ExpectedConditions.elementToBeClickable(product(product)));
         driver.findElement(product(product)).click();
     }
     private By noProductsMessage(){
@@ -28,7 +28,7 @@ public class ProductsPage extends BasePage{
 
     public boolean isProductDisplayed(String product){
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(product(product)));
+            waits.until(ExpectedConditions.visibilityOfElementLocated(product(product)));
             WebElement productElement = driver.findElement(product(product));
             return productElement.isDisplayed();
         } catch (Exception e) {

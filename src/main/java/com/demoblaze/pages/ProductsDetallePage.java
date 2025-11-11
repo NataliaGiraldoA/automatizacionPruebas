@@ -28,21 +28,21 @@ public class ProductsDetallePage extends BasePage{
         // Limpiar y establecer cantidad
         driver.findElement(quantity()).clear();
         // Esperar que el campo de cantidad esté visible y clickable
-        wait.until(ExpectedConditions.visibilityOfElementLocated(quantity()));
-        wait.until(ExpectedConditions.elementToBeClickable(quantity()));
+        waits.until(ExpectedConditions.visibilityOfElementLocated(quantity()));
+        waits.until(ExpectedConditions.elementToBeClickable(quantity()));
 
         driver.findElement(quantity()).sendKeys(quantity);
 
         // Click en agregar al carrito
         driver.findElement(btnAddCart()).click();
         // Esperar que el botón esté clickable
-        wait.until(ExpectedConditions.elementToBeClickable(btnAddCart()));
+        waits.until(ExpectedConditions.elementToBeClickable(btnAddCart()));
 
 
         // Esperar confirmación (opcional)
         try {
         // Esperar confirmación
-            wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage()));
+            waits.until(ExpectedConditions.visibilityOfElementLocated(successMessage()));
         } catch (Exception e) {
             System.out.println("No se pudo confirmar el agregado al carrito");
         }

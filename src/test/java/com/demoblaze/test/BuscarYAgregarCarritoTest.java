@@ -16,7 +16,7 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
 
     @DataProvider(name = "productosFromExcel")
     public Object[][] productosFromExcel() {
-        return ExcelReaderCart.readProductos(null);
+        return ExcelReaderCart.readProductos(Constants.PRODUCTOS_BUSQUEDA);
     }
 
     @Test(dataProvider = "productosFromExcel")
