@@ -6,12 +6,18 @@ import com.demoblaze.pages.ProductsDetallePage;
 import com.demoblaze.pages.CartPage;
 import com.demoblaze.utils.Constants;
 import com.demoblaze.utils.ExcelReaderCart;
+import com.demoblaze.utils.ResultLogger;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 public class BuscarYAgregarCarritoTest extends BaseTest {
+    @BeforeClass
+    public void initLogger() {
+        ResultLogger.init("BuscarYAgregarCarrito");
+    }
 
 
     @DataProvider(name = "productosFromExcel")
@@ -51,6 +57,9 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
             softAssert.assertEquals(cantidadEnCarrito, cantidad,
                     "La cantidad del producto '" + nombreProducto + "' es incorrecta. " +
                             "Esperada: " + cantidad + ", Encontrada: " + cantidadEnCarrito);
+            if (productInCart) {
+                ResultLogger.logProducto(categoria, subCategoria, nombreProducto, cantidadEnCarrito);
+            }
         } else {
             softAssert.assertFalse(productInCart,
                     "El producto '" + nombreProducto + "' no debería estar en el carrito, pero sí está");
