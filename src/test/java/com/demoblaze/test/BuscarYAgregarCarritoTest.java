@@ -34,30 +34,33 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
         homePage.navigateTo(Constants.BASE_URL);
         homePage.buscarProducto(nombreProducto);
 
-        // Verificar que la búsqueda devolvió resultados
         boolean hayResultados = productsPage.hayResultados();
-        Assert.assertTrue(hayResultados,
+        softAssert.assertTrue(hayResultados,
                 "No se encontró '" + nombreProducto + "' en los productos");
 
-        // Verificar que el producto específico está visible en los resultados
         boolean isProductDisplayed = productsPage.isProductDisplayed(nombreProducto);
-
-        Assert.assertTrue(isProductDisplayed,
+        softAssert.assertTrue(isProductDisplayed,
                 "El producto '" + nombreProducto + "' no aparece en los resultados de búsqueda");
 
         productsPage.selectProduct(nombreProducto);
         detallePage.agregarCarrito(cantidad);
+
         cartPage.irAlCarrito();
+
         boolean productInCart = cartPage.isProductoEnCarrito(nombreProducto);
         if("SUCCESS".equalsIgnoreCase(expectedResult)){
             softAssert.assertTrue(productInCart,
-                    "El producto"+ nombreProducto+ "debería estar en el carrito, pero no está");
+                    "El producto '" + nombreProducto + "' debería estar en el carrito");
+
+            int cantidadEnCarrito = cartPage.getCantidadProducto(nombreProducto);
+            softAssert.assertEquals(cantidadEnCarrito, cantidad,
+                    "La cantidad del producto '" + nombreProducto + "' es incorrecta. " +
+                    "Esperada: " + cantidad + ", Encontrada: " + cantidadEnCarrito);
         } else {
             softAssert.assertFalse(productInCart,
-                    "El producto '" + nombreProducto + "' no debería estar en el carrito, pero si está");
-
-    }
-        softAssert.assertAll();
+                    "El producto '" + nombreProducto + "' no debería estar en el carrito, pero sí está");
+            softAssert.assertAll();
+        }
     }
 
 
