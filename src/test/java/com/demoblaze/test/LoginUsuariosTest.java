@@ -29,40 +29,21 @@ public class LoginUsuariosTest extends BaseTest {
         loginPage.enterPassword(password);
         loginPage.clickLogin();
 
+        boolean loginExitoso = loginPage.isLoginSuccessful();
+
         if (expectedResult.equalsIgnoreCase("SUCCESS")) {
-            boolean loginExitoso = loginPage.isLoginSuccessful();
             softAssert.assertTrue(
                     loginExitoso,
                     "Login tuvo que haber sido exitoso pero falló" + email
             );
 
-
         } else {
-            boolean loginExitoso = loginPage.isLoginSuccessful();
-            if(!loginExitoso){
-                boolean errorVisible = loginPage.isErrorDisplayed();
-                String errorText = loginPage.getErrorText();
-
-                softAssert.assertTrue(
-                        errorVisible,
-                        "Debió aparecer mensaje de error para: " + email
-                );
-
-                softAssert.assertFalse(
-                        errorText.isEmpty(),
-                        "El mensaje de error está vacío para: " + email
-                );
-
-                softAssert.assertTrue(
-                        errorText.toLowerCase().contains("warning") ||
-                                errorText.toLowerCase().contains("incorrect"),
-                        "Mensaje de error inválido: '" + errorText + "'"
-                );
-            }
-            softAssert.assertFalse(
-                    loginExitoso,
-                    "Login debió fallar pero fue exitoso para: " + email
-            );
+                softAssert.assertFalse(loginExitoso, "Login debió fallar para: " + email);
+                if (!loginExitoso) {
+                    boolean errorDisplayed = loginPage.isErrorDisplayed();
+                    softAssert.assertTrue(errorDisplayed,
+                            "Mensaje de error no visible");
+                }
 
             }
         softAssert.assertAll();

@@ -32,5 +32,13 @@ public class ProductsPage extends BasePage{
             return false;
         }
     }
+    public boolean hayResultados() {
+        try {
+            By noResultsMsg = By.xpath("//p[contains(text(),'empty')]");
+            return !driver.findElement(noResultsMsg).isDisplayed();
+        } catch (Exception e) {
+            return true;
+        }
+    }
 
 }

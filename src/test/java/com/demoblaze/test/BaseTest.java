@@ -24,12 +24,12 @@ public class BaseTest {
         driver.get(Constants.BASE_URL);
     }
 
-
+/*
     @AfterTest
     public void tearDown() {
         if (driver != null) {
             driver.quit();
         }
     }
-
+*/
 }

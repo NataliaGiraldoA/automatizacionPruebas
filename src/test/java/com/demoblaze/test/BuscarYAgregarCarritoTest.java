@@ -14,15 +14,17 @@ import org.testng.asserts.SoftAssert;
 public class BuscarYAgregarCarritoTest extends BaseTest {
 
 
-
     @DataProvider(name = "productosFromExcel")
     public Object[][] productosFromExcel() {
         return ExcelReaderCart.readProductos(Constants.PRODUCTOS_BUSQUEDA);
     }
 
+
     @Test(dataProvider = "productosFromExcel")
     public void testBuscarYAgregarProductoAlCarrito(String categoria, String subCategoria,
                                                     String nombreProducto, int cantidad, String expectedResult) {
+
+        SoftAssert softAssert = new SoftAssert();
 
         HomePage homePage = new HomePage(driver);
         ProductsPage productsPage = new ProductsPage(driver);
@@ -31,9 +33,16 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
 
         homePage.navigateTo(Constants.BASE_URL);
         homePage.buscarProducto(nombreProducto);
-        SoftAssert softAssert = new SoftAssert();
 
-        Assert.assertTrue(productsPage.isProductDisplayed(nombreProducto),
+        // Verificar que la búsqueda devolvió resultados
+        boolean hayResultados = productsPage.hayResultados();
+        Assert.assertTrue(hayResultados,
+                "No se encontró '" + nombreProducto + "' en los productos");
+
+        // Verificar que el producto específico está visible en los resultados
+        boolean isProductDisplayed = productsPage.isProductDisplayed(nombreProducto);
+
+        Assert.assertTrue(isProductDisplayed,
                 "El producto '" + nombreProducto + "' no aparece en los resultados de búsqueda");
 
         productsPage.selectProduct(nombreProducto);
@@ -42,12 +51,12 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
         boolean productInCart = cartPage.isProductoEnCarrito(nombreProducto);
         if("SUCCESS".equalsIgnoreCase(expectedResult)){
             softAssert.assertTrue(productInCart,
-                    "Debió registrarse correctamente, pero no lo hizo.");
+                    "El producto"+ nombreProducto+ "debería estar en el carrito, pero no está");
         } else {
             softAssert.assertFalse(productInCart,
-                    "El producto '" + nombreProducto + "' no debería estar en el carrito");
+                    "El producto '" + nombreProducto + "' no debería estar en el carrito, pero si está");
 
-        }
+    }
         softAssert.assertAll();
     }
 

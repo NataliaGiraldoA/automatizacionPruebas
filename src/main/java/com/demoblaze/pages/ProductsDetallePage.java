@@ -29,14 +29,14 @@ public class ProductsDetallePage extends BasePage{
     //metodo
     public void agregarCarrito(String quantity){
         waits.waitForVisibility(quantity());
-        driver.findElement(quantity()).clear();
         waits.waitForClickable(quantity());
+        driver.findElement(quantity()).clear();
 
         driver.findElement(quantity()).sendKeys(quantity);
-
+        waits.waitForClickable(btnAddCart());
         driver.findElement(btnAddCart()).click();
 
-        waits.waitForClickable(btnAddCart());
+
         try {
             waits.fluentWaitForSuccessMessage(successMessage());
         } catch (Exception e) {
@@ -47,5 +47,25 @@ public class ProductsDetallePage extends BasePage{
     // Sobrecarga para cantidad como int
     public void agregarCarrito(int cantidad){
         agregarCarrito(String.valueOf(cantidad));
+    }
+
+    // Método para verificar si el mensaje de éxito se muestra
+    public boolean isSuccessMessageDisplayed(){
+        try {
+            waits.waitForVisibility(successMessage());
+            return driver.findElement(successMessage()).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Método para obtener el texto del mensaje de éxito
+    public String getSuccessMessageText(){
+        try {
+            waits.waitForVisibility(successMessage());
+            return driver.findElement(successMessage()).getText();
+        } catch (Exception e) {
+            return "";
+        }
     }
 }
