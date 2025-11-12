@@ -32,7 +32,7 @@ public class ExcelReaderCart {
             }
 
             // 4 columnas: Categoria, SubCategoria, Producto, Cantidad
-            int COLS = 4;
+            int COLS = 5;
             int totalRows = lastRowIdx - firstRowIdx;
             Object[][] data = new Object[totalRows][COLS];
 
@@ -46,6 +46,7 @@ public class ExcelReaderCart {
                 String subCategoria = fmt.formatCellValue(row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
                 String producto = fmt.formatCellValue(row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
                 String cantidadStr = fmt.formatCellValue(row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
+                String expectedResult = fmt.formatCellValue(row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
 
                 // Saltar filas donde el producto esté vacío
                 if (producto.isEmpty()) continue;
@@ -67,6 +68,7 @@ public class ExcelReaderCart {
                 data[out][1] = subCategoria;
                 data[out][2] = producto;
                 data[out][3] = cantidad;
+                data[out][4] = expectedResult;
                 out++;
             }
 

@@ -1,13 +1,16 @@
 package com.demoblaze.pages;
 
+import com.demoblaze.utils.WebDriverWaits;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class ProductsDetallePage extends BasePage{
 
+    WebDriverWaits waits;
+
     public ProductsDetallePage(WebDriver driver){
         super(driver);
+        this.waits = new WebDriverWaits(driver);
     }
 
     //Elementos
@@ -25,24 +28,17 @@ public class ProductsDetallePage extends BasePage{
 
     //metodo
     public void agregarCarrito(String quantity){
-        // Limpiar y establecer cantidad
+        waits.waitForVisibility(quantity());
         driver.findElement(quantity()).clear();
-        // Esperar que el campo de cantidad esté visible y clickable
-        waits.until(ExpectedConditions.visibilityOfElementLocated(quantity()));
-        waits.until(ExpectedConditions.elementToBeClickable(quantity()));
+        waits.waitForClickable(quantity());
 
         driver.findElement(quantity()).sendKeys(quantity);
 
-        // Click en agregar al carrito
         driver.findElement(btnAddCart()).click();
-        // Esperar que el botón esté clickable
-        waits.until(ExpectedConditions.elementToBeClickable(btnAddCart()));
 
-
-        // Esperar confirmación (opcional)
+        waits.waitForClickable(btnAddCart());
         try {
-        // Esperar confirmación
-            waits.until(ExpectedConditions.visibilityOfElementLocated(successMessage()));
+            waits.fluentWaitForSuccessMessage(successMessage());
         } catch (Exception e) {
             System.out.println("No se pudo confirmar el agregado al carrito");
         }

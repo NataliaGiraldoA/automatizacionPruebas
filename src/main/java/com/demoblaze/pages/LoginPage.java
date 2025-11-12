@@ -29,14 +29,9 @@ public class LoginPage extends BasePage {
         driver.findElement(loginButton()).click();
     }
 
-    /*
-    // ✅ Nueva verificación correcta: login exitoso = cambiar de página
-    public boolean isLoginSuccessful() {
-        return driver.getCurrentUrl().contains("route=account/account");
-    }
-*/
     public boolean isLoginSuccessful(){
         try{
+            waits.fluentWaitForPageRedirect(By.cssSelector("#content > h2:nth-child(1)"));
             WebElement accountMessage = driver.findElement(By.cssSelector("#content > h2:nth-child(1)"));
             return accountMessage.isDisplayed();
         } catch (Exception e){
@@ -46,6 +41,7 @@ public class LoginPage extends BasePage {
 
     public boolean isErrorDisplayed() {
         try {
+            waits.fluentWaitForErrorAlert(alertMessage());
             return driver.findElement(alertMessage()).isDisplayed();
         } catch (Exception e) {
             return false;

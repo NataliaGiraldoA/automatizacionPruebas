@@ -22,7 +22,7 @@ public class ExcelReaderUsers {
             int totalRows   = lastRowIdx - firstRowIdx; // sin contar header
 
             // 5 columnas + confirm
-            int COLS = 6;
+            int COLS = 7;
             Object[][] data = new Object[totalRows][COLS];
 
             // i = firstRowIdx + 1 para saltar el header
@@ -36,6 +36,12 @@ public class ExcelReaderUsers {
                 String email = fmt.formatCellValue(row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
                 String phone = fmt.formatCellValue(row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
                 String pass  = fmt.formatCellValue(row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
+                String expectedResult = fmt.formatCellValue(row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)).trim();
+
+                if (first.isBlank() && last.isBlank() && email.isBlank()
+                        && phone.isBlank() && pass.isBlank() && expectedResult.isBlank()) {
+                    continue;
+                }
 
                 data[out][0] = first;
                 data[out][1] = last;
@@ -43,6 +49,7 @@ public class ExcelReaderUsers {
                 data[out][3] = phone;
                 data[out][4] = pass;
                 data[out][5] = pass; // confirmación = pass
+                data[out][6] = expectedResult;
                 out++;
             }
 

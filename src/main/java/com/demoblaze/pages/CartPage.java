@@ -18,24 +18,12 @@ public class CartPage extends BasePage {
 
     // Elementos
     private By cartLink() {
-        return By.xpath("//a[contains(@href, 'checkout/cart')]");
+        return xpath("//a[contains(@href, 'checkout/cart')]");
+    }
+    private By productInCart(String nombre){
+        return xpath("//table[contains(@class,'table') and contains(@class,'table-bordered')]//td[contains(@class,'text-left')]//a[contains(text(),'"+nombre+"')]");
     }
 
-    private By emptyMessage() {
-        return By.xpath("//*[contains(text(),'empty')]");
-    }
-
-    private By allTableRows() {
-        return By.xpath("//tbody//tr");
-    }
-
-    private By allProductLinks() {
-        return By.xpath("//tbody//a[contains(@href, 'product') and not(contains(@class, 'btn'))]");
-    }
-
-    private By quantityInputs() {
-        return By.xpath("//tbody/tr/td[4]/div/input");
-    }
 
     // Métodos
     public void irAlCarrito() {
@@ -44,42 +32,15 @@ public class CartPage extends BasePage {
         waits.waitForUrlContains("checkout/cart");
     }
 
-    public boolean isCarritoVacio() {
-        try {
-            return driver.findElement(emptyMessage()).isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public boolean isProductoEnCarrito(String nombre) {
         try {
-            List<WebElement> links = driver.findElements(allProductLinks());
-            for (WebElement link : links) {
-                if (link.getText().contains(nombre)) {
-                    return true;
-                }
-            }
-            return false;
+            waits.waitForVisibility(productInCart(nombre));
+            return driver.findElement(productInCart(nombre)).isDisplayed();
         } catch (Exception e) {
             return false;
         }
     }
 
-    public int getCantidadProducto(String nombre) {
-        try {
-            List<WebElement> rows = driver.findElements(allTableRows());
-            for (WebElement row : rows) {
-                if (row.getText().contains(nombre)) {
-                    WebElement input = row.findElement(By.name("quantity"));
-                    return Integer.parseInt(input.getAttribute("value"));
-                }
-            }
-            return 0;
-        } catch (Exception e) {
-            return 0;
-        }
-    }
 
 
 }
