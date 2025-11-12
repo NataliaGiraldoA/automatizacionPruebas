@@ -13,7 +13,7 @@ import org.testng.asserts.SoftAssert;
 
 public class BuscarYAgregarCarritoTest extends BaseTest {
 
-    private static final int CANTIDAD_MAXIMA = 99;
+
 
     @DataProvider(name = "productosFromExcel")
     public Object[][] productosFromExcel() {

@@ -3,11 +3,12 @@ package com.demoblaze.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
+import com.demoblaze.utils.WebDriverWaits;
 public class LoginPage extends BasePage {
-
+    private WebDriverWaits waits;
     public LoginPage(WebDriver driver) {
         super(driver);
+        this.waits = new WebDriverWaits(driver);
     }
 
     private By emailInput() { return By.id("input-email"); }
@@ -16,16 +17,19 @@ public class LoginPage extends BasePage {
     private By alertMessage() { return By.cssSelector(".alert-danger"); }
 
     public void enterEmail(String email) {
+        waits.waitForVisibility(emailInput());
         driver.findElement(emailInput()).clear();
         driver.findElement(emailInput()).sendKeys(email);
     }
 
     public void enterPassword(String password) {
+        waits.waitForVisibility(passwordInput());
         driver.findElement(passwordInput()).clear();
         driver.findElement(passwordInput()).sendKeys(password);
     }
 
     public void clickLogin() {
+        waits.waitForClickable(loginButton());
         driver.findElement(loginButton()).click();
     }
 

@@ -3,9 +3,8 @@ package com.demoblaze.pages;
 import com.demoblaze.utils.WebDriverWaits;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import java.util.ArrayList;
-import java.util.List;
+
+import static org.openqa.selenium.By.xpath;
 
 public class CartPage extends BasePage {
 
@@ -25,7 +24,7 @@ public class CartPage extends BasePage {
     }
 
 
-    // Métodos
+
     public void irAlCarrito() {
         waits.waitForClickable(cartLink());
         driver.findElement(cartLink()).click();
