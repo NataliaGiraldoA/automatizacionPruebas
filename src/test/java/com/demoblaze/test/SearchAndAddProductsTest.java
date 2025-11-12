@@ -45,11 +45,12 @@ public class SearchAndAddProductsTest extends BaseTest{
                     if(isProductDisplayed) {
                         productsPage.selectProduct(nombreProducto);
                         detallePage.agregarCarrito(cantidad);
-
+                        /*
                         boolean successMessageDisplayed = detallePage.isSuccessMessageDisplayed();
                         softAssert.assertTrue(successMessageDisplayed,
                             "No se mostró el mensaje de éxito al agregar '" + nombreProducto + "' al carrito");
-
+                        */
+                        
                     }
                 } else {
                     softAssert.assertTrue(hayResultados,

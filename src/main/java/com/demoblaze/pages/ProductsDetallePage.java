@@ -52,7 +52,7 @@ public class ProductsDetallePage extends BasePage{
     // Método para verificar si el mensaje de éxito se muestra
     public boolean isSuccessMessageDisplayed(){
         try {
-            waits.waitForVisibility(successMessage());
+            waits.fluentWaitForSuccessMessage(successMessage());
             return driver.findElement(successMessage()).isDisplayed();
         } catch (Exception e) {
             return false;
