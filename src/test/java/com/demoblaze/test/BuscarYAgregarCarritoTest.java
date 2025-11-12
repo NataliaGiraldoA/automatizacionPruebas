@@ -34,12 +34,7 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
         homePage.navigateTo(Constants.BASE_URL);
         homePage.buscarProducto(nombreProducto);
 
-        boolean hayResultados = productsPage.hayResultados();
-        softAssert.assertTrue(hayResultados,
-                "No se encontró '" + nombreProducto + "' en los productos");
-
-        boolean isProductDisplayed = productsPage.isProductDisplayed(nombreProducto);
-        softAssert.assertTrue(isProductDisplayed,
+        Assert.assertTrue(productsPage.isProductDisplayed(nombreProducto),
                 "El producto '" + nombreProducto + "' no aparece en los resultados de búsqueda");
 
         productsPage.selectProduct(nombreProducto);
@@ -55,7 +50,7 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
             int cantidadEnCarrito = cartPage.getCantidadProducto(nombreProducto);
             softAssert.assertEquals(cantidadEnCarrito, cantidad,
                     "La cantidad del producto '" + nombreProducto + "' es incorrecta. " +
-                    "Esperada: " + cantidad + ", Encontrada: " + cantidadEnCarrito);
+                            "Esperada: " + cantidad + ", Encontrada: " + cantidadEnCarrito);
         } else {
             softAssert.assertFalse(productInCart,
                     "El producto '" + nombreProducto + "' no debería estar en el carrito, pero sí está");
