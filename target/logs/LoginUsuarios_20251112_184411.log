@@ -1,0 +1,7 @@
+2025-11-12T18:44:30.7942069 LOGIN email=- resultado=FAILED
+2025-11-12T18:44:48.2022288 LOGIN email=invalidemail resultado=FAILED
+2025-11-12T18:45:05.5493797 LOGIN email=user@mail.com resultado=FAILED
+2025-11-12T18:45:22.8031796 LOGIN email=noexiste@mail.com resultado=FAILED
+2025-11-12T18:45:40.9446451 LOGIN email=@mail.com resultado=FAILED
+2025-11-12T18:45:58.1867825 LOGIN email=user@mail resultado=FAILED
+2025-11-12T18:46:00.6495305 LOGIN email=kelsier@gmail.com resultado=SUCCESS

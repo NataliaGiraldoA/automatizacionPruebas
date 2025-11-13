@@ -4,12 +4,18 @@ import com.demoblaze.pages.HomePage;
 import com.demoblaze.pages.RegisterPage;
 import com.demoblaze.utils.Constants;
 import com.demoblaze.utils.ExcelReaderUsers;
+import com.demoblaze.utils.ResultLogger;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 public class RegistroUsuariosTest extends BaseTest {
+    @BeforeClass
+    public void initLogger() {
+        ResultLogger.init("RegistroUsuarios");
+    }
     @DataProvider(name = "usersFromExcel")
     public Object[][] usersFromExcel() {
         return ExcelReaderUsers.readUsers(Constants.USERS);
@@ -56,6 +62,8 @@ public class RegistroUsuariosTest extends BaseTest {
         boolean success = registerPage.isRegistrationSuccessful();
         boolean hasAlert = registerPage.ErrorMessage();
         boolean hasFieldErrors = registerPage.textDanger();
+
+        ResultLogger.logRegistro(email, success);
 
         if ("SUCCESS".equalsIgnoreCase(expectedResult)) {
             softAssert.assertTrue(success,
