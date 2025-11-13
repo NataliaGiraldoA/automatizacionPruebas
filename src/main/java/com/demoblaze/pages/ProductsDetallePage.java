@@ -38,7 +38,7 @@ public class ProductsDetallePage extends BasePage{
 
 
         try {
-            waits.fluentWaitForSuccessMessage(successMessage());
+            waits.fluentWaitForMessage(successMessage());
         } catch (Exception e) {
             System.out.println("No se pudo confirmar el agregado al carrito");
         }
@@ -49,17 +49,15 @@ public class ProductsDetallePage extends BasePage{
         agregarCarrito(String.valueOf(cantidad));
     }
 
-    // Método para verificar si el mensaje de éxito se muestra
     public boolean isSuccessMessageDisplayed(){
         try {
-            waits.fluentWaitForSuccessMessage(successMessage());
+            waits.fluentWaitForMessage(successMessage());
             return driver.findElement(successMessage()).isDisplayed();
         } catch (Exception e) {
             return false;
         }
     }
 
-    // Método para obtener el texto del mensaje de éxito
     public String getSuccessMessageText(){
         try {
             waits.waitForVisibility(successMessage());

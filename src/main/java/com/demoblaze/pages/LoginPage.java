@@ -45,7 +45,7 @@ public class LoginPage extends BasePage {
 
     public boolean isErrorDisplayed() {
         try {
-            waits.fluentWaitForErrorAlert(alertMessage());
+            waits.fluentWaitForMessage(alertMessage());
             return driver.findElement(alertMessage()).isDisplayed();
         } catch (Exception e) {
             return false;
