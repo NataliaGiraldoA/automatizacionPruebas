@@ -11,10 +11,12 @@ public class ResultLogger {
     private static Path logFile;
 
     public static synchronized void init(String name) {
-        String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         Path dir = Paths.get("target", "logs");
-        try { Files.createDirectories(dir); } catch (Exception ignored) {}
-        logFile = dir.resolve(name + "_" + ts + ".log");
+        try {
+            Files.createDirectories(dir);
+        } catch (Exception ignored) {
+        }
+        logFile = dir.resolve(name + ".log");
     }
 
     private static String ts() {
@@ -31,8 +33,18 @@ public class ResultLogger {
         write(ts() + " REGISTRO email=" + nv(email) + " resultado=" + (success ? "SUCCESS" : "FAILED"));
     }
 
-    public static void logProducto(String categoria, String subCategoria, String producto, int cantidad) {
-        write(ts() + " CARRITO categoria=" + nv(categoria) + " subcategoria=" + nv(subCategoria) + " producto=" + nv(producto) + " cantidad=" + cantidad);
+    public static void logProducto(String categoria, String subCategoria, String producto, int cantidad, boolean agregadoExitosamente) {
+        write(ts() + " CARRITO categoria=" + nv(categoria) + " subcategoria=" + nv(subCategoria) + " producto=" + nv(producto) + " cantidad=" + cantidad + " agregado=" + agregadoExitosamente);
+    }
+
+    public static void logProductoConResultado(String categoria, String subCategoria, String producto,
+                                               int cantidad, boolean agregadoExitosamente) {
+        String estado = agregadoExitosamente ? "AGREGADO" : "NO_AGREGADO";
+        write(ts() + " CARRITO categoria=" + nv(categoria) +
+              " subcategoria=" + nv(subCategoria) +
+              " producto=" + nv(producto) +
+              " cantidad=" + cantidad +
+              " estado=" + estado);
     }
 
     public static void logLogin(String email, boolean success) {

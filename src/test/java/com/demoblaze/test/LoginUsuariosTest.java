@@ -5,6 +5,7 @@ import com.demoblaze.pages.LoginPage;
 import com.demoblaze.utils.Constants;
 import com.demoblaze.utils.ExcelReaderLogin;
 import com.demoblaze.utils.ResultLogger;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -27,7 +28,9 @@ public class LoginUsuariosTest extends BaseTest {
 
         HomePage homePage = new HomePage(driver);
         homePage.navigateTo(Constants.BASE_URL);
+        Assert.assertTrue(homePage.isAccountDisplayed(), "No se pudo ingresar al menu de account");
         homePage.clickAccount();
+        Assert.assertTrue(homePage.isLoginDisplayed(), "No se pudo ingresar al login");
         homePage.clickLogin();
 
         LoginPage loginPage = new LoginPage(driver);

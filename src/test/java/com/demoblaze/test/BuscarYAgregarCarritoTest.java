@@ -57,14 +57,15 @@ public class BuscarYAgregarCarritoTest extends BaseTest {
             softAssert.assertEquals(cantidadEnCarrito, cantidad,
                     "La cantidad del producto '" + nombreProducto + "' es incorrecta. " +
                             "Esperada: " + cantidad + ", Encontrada: " + cantidadEnCarrito);
-            if (productInCart) {
-                ResultLogger.logProducto(categoria, subCategoria, nombreProducto, cantidadEnCarrito);
-            }
+
+
+
         } else {
             softAssert.assertFalse(productInCart,
                     "El producto '" + nombreProducto + "' no debería estar en el carrito, pero sí está");
             softAssert.assertAll();
         }
+        ResultLogger.logProducto(categoria, subCategoria, nombreProducto, cantidad,productInCart);
     }
 
 

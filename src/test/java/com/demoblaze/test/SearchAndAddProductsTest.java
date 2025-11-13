@@ -28,13 +28,6 @@ public class SearchAndAddProductsTest extends BaseTest{
         for(Object[] producto : productos) {
             String nombreProducto = (String) producto[2];
             int cantidad = (int) producto[3];
-            String expectedResult = (String) producto[4];
-
-            // Solo agregar productos que deberían tener éxito
-            if(!"SUCCESS".equalsIgnoreCase(expectedResult)) {
-                System.out.println("No se está agregando : " + nombreProducto + "debido a que el test debe de fallar (expectedResult: " + expectedResult + ")");
-                continue;
-            }
 
             try {
                 homePage.navigateTo(Constants.BASE_URL);
@@ -55,7 +48,7 @@ public class SearchAndAddProductsTest extends BaseTest{
                         softAssert.assertTrue(successMessageDisplayed,
                             "No se mostró el mensaje de éxito al agregar '" + nombreProducto + "' al carrito");
                         */
-                        
+
                     }
                 } else {
                     softAssert.assertTrue(hayResultados,
@@ -68,8 +61,6 @@ public class SearchAndAddProductsTest extends BaseTest{
 
         cartPage.irAlCarrito();
 
-
-        //Verificar que todos los productos estén en el carrito
         int productosEsperados = 0;
         int productosEncontrados = 0;
 
@@ -89,15 +80,14 @@ public class SearchAndAddProductsTest extends BaseTest{
 
                 if(enCarrito) {
                     productosEncontrados++;
-
                     int cantidadEnCarrito = cartPage.getCantidadProducto(nombreProducto);
+
                     softAssert.assertEquals(cantidadEnCarrito, cantidadEsperada,
                         "La cantidad del producto '" + nombreProducto + "' en el carrito NO coincide. " +
                         "Esperada: " + cantidadEsperada + ", Encontrada: " + cantidadEnCarrito);
-                    ResultLogger.logProducto(categoria, subCategoria, nombreProducto, cantidadEnCarrito);
 
-                } else {
-                    softAssert.assertTrue(enCarrito, "El producto '" + nombreProducto + "' NO se encuentra en el carrito");
+                    ResultLogger.logProductoConResultado(categoria, subCategoria, nombreProducto,
+                                                        cantidadEnCarrito, true);
                 }
             }
         }

@@ -30,14 +30,27 @@ public class RegisterPage extends BasePage{
     private By confirmPassword(){
         return By.id("input-confirm");
     }
-    private final By newsletterYes = By.cssSelector("input[name='newsletter'][value='1']");
-    private final By newsletterNo  = By.cssSelector("input[name='newsletter'][value='0']");
-    private final By privacyPolicy = By.name("agree");
-    private final By continueBtn   = By.cssSelector("input[type='submit'][value='Continue']");
-    private final By fieldErrors    = By.cssSelector(".text-danger");
-    private final By successMessage = By.xpath("//*[@id='content']//p[contains(text(),'Congratulations')]");
-    private final By errorAlert     = By.cssSelector(".alert.alert-danger");
-
+    private By newsletterYes(){
+        return By.cssSelector("input[name='newsletter'][value='1']");
+    }
+    private By newsletterNo() {
+        return By.cssSelector("input[name='newsletter'][value='0']");
+    }
+    private By privacyPolicy(){
+        return By.name("agree");
+    }
+    private By continueBtn(){
+        return By.cssSelector("input[type='submit'][value='Continue']");
+    }
+    private By fieldErrors(){
+        return By.cssSelector(".text-danger");
+    }
+    private By successMessage(){
+        return By.xpath("//*[@id='content']//p[contains(text(),'Congratulations')]");
+    }
+    private By errorAlert(){
+        return By.cssSelector(".alert.alert-danger");
+    }
 
     private void fillField(By locator, String value) {
         waits.waitForVisibility(locator);
@@ -81,31 +94,31 @@ public class RegisterPage extends BasePage{
         enterConfirmPassword(confirmPassword);
     }
     public void clickNewsletterYes(){
-        waits.waitForClickable(newsletterYes);
-        driver.findElement(newsletterYes).click();
+        waits.waitForClickable(newsletterYes());
+        driver.findElement(newsletterYes()).click();
     }
 
     public void clickNewsletterNo(){
-        waits.waitForClickable(newsletterNo);
-        driver.findElement(newsletterNo).click();
+        waits.waitForClickable(newsletterNo());
+        driver.findElement(newsletterNo()).click();
     }
 
     public void clickPrivacyPolicy(){
-        waits.waitForClickable(privacyPolicy);
-        driver.findElement(privacyPolicy).click();
+        waits.waitForClickable(privacyPolicy());
+        driver.findElement(privacyPolicy()).click();
     }
     public void clickContinue(){
-        waits.waitForClickable(continueBtn);
-        driver.findElement(continueBtn).click();
+        waits.waitForClickable(continueBtn());
+        driver.findElement(continueBtn()).click();
     }
     public void waitForAnyOutcome() {
-        waits.waitForAnyOf(successMessage, errorAlert, fieldErrors);
+        waits.waitForAnyOf(successMessage(), errorAlert(), fieldErrors());
     }
 
     public boolean textDanger(){
         try{
-            waits.waitForVisibility(fieldErrors);
-            return driver.findElement(fieldErrors).isDisplayed();
+            waits.waitForVisibility(fieldErrors());
+            return driver.findElement(fieldErrors()).isDisplayed();
         } catch (Exception e){
             return false;
         }
@@ -113,16 +126,16 @@ public class RegisterPage extends BasePage{
 
     public String getFieldErrors() {
         try {
-            waits.waitForVisibility(fieldErrors);
-            return driver.findElement(fieldErrors).getText();
+            waits.waitForVisibility(fieldErrors());
+            return driver.findElement(fieldErrors()).getText();
         } catch (Exception e) {
             return "";
         }
     }
     public boolean isRegistrationSuccessful() {
         try {
-            waits.waitForVisibility(successMessage);
-            return driver.findElement(successMessage).isDisplayed();
+            waits.waitForVisibility(successMessage());
+            return driver.findElement(successMessage()).isDisplayed();
         } catch (Exception e) {
             return false;
         }
@@ -130,7 +143,7 @@ public class RegisterPage extends BasePage{
 
     public boolean ErrorMessage() {
         try {
-            waits.waitForVisibility(errorAlert);
+            waits.waitForVisibility(errorAlert());
             return true;
         } catch (Exception e) {
             return false;
@@ -138,8 +151,7 @@ public class RegisterPage extends BasePage{
 
     }
     public String getErrorMessage() {
-        waits.waitForVisibility(errorAlert);
-        return driver.findElement(errorAlert).getText();
+        waits.waitForVisibility(errorAlert());
+        return driver.findElement(errorAlert()).getText();
     }
-
 }

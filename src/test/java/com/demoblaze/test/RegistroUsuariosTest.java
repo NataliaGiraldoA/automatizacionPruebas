@@ -5,6 +5,7 @@ import com.demoblaze.pages.RegisterPage;
 import com.demoblaze.utils.Constants;
 import com.demoblaze.utils.ExcelReaderUsers;
 import com.demoblaze.utils.ResultLogger;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -42,8 +43,10 @@ public class RegistroUsuariosTest extends BaseTest {
 
         HomePage homePage = new HomePage(driver);
         homePage.navigateTo(Constants.BASE_URL);
+        Assert.assertTrue(homePage.isAccountDisplayed(), "No se pudo ingresar al menu de account");
         homePage.clickAccount();
-        homePage.clickRegister();
+        Assert.assertTrue(homePage.isLoginDisplayed(), "No se pudo ingresar al login");
+        homePage.clickLogin();
 
         if ("SUCCESS".equalsIgnoreCase(expectedResult)) {
             String[] parts = email.split("@");
@@ -60,6 +63,7 @@ public class RegistroUsuariosTest extends BaseTest {
         registerPage.waitForAnyOutcome();
 
         boolean success = registerPage.isRegistrationSuccessful();
+
         boolean hasAlert = registerPage.ErrorMessage();
         boolean hasFieldErrors = registerPage.textDanger();
 
